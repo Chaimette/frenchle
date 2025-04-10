@@ -44,10 +44,6 @@ function isValidFrenchWord(word) {
   const normalizedWord = word.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
   console.log(`Checking if "${normalizedWord}" is valid`);
   
-  if (frenchWords.length > 0) {
-    console.log("First 5 words in dictionary:", frenchWords.slice(0, 5));
-  }
-  
   const isValid = frenchWords.includes(normalizedWord);
   console.log(`Word "${normalizedWord}" is valid: ${isValid}`);
   
@@ -102,16 +98,24 @@ function createGrid(wordLength) {
 }
 
 function focusFirstCellInRow(rowIndex) {
-  try {
-    const firstInput = table.rows[rowIndex].cells[0].querySelector("input");
-    if (firstInput) {
-      setTimeout(() => firstInput.focus(), 0);
+  setTimeout(() => {
+    try {
+      const row = table.rows[rowIndex];
+      if (row) {
+        const firstInput = row.cells[0].querySelector("input");
+        if (firstInput) {
+          firstInput.focus();
+        } else {
+          console.warn(`No input found in the first cell of row ${rowIndex}`);
+        }
+      } else {
+        console.warn(`Row ${rowIndex} not found`);
+      }
+    } catch (e) {
+      console.warn(`Could not focus first cell in row ${rowIndex}:`, e);
     }
-  } catch (e) {
-    console.warn(`Could not focus first cell in row ${rowIndex}:`, e);
-  }
+  }, 100); // Delay to ensure the DOM is updated
 }
-
 function enableRow(rowIndex) {
   const rows = table.rows;
   for (let i = 0; i < rows.length; i++) {
@@ -134,12 +138,19 @@ function getDailySecretWord() {
   }
 
   return loadDictionary().then(() => {
+    
     if (frenchWords.length === 0) {
       console.error("No words available in dictionary");
       return "JAVASCRIPT";
+    }; 
+    const eligibleWords = frenchWords.filter(word => word.length <= 12);
+
+    if (eligibleWords.length === 0) {
+      console.warn("No words with 12 letters or less, using default word");
+      return "JAVASCRIPT";
     }
     
-    const word = frenchWords[Math.floor(Math.random() * frenchWords.length)];
+    const word = eligibleWords[Math.floor(Math.random() * eligibleWords.length)];
     localStorage.setItem(
       "dailyWord",
       JSON.stringify({ date: today, word })

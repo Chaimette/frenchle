@@ -60,3 +60,21 @@ header {
 .instructions-container h2 {
   margin-bottom: 1rem;
 }
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#submit-button{
+  justify-content: center;
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background-color: #9285a8;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
