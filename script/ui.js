@@ -66,6 +66,7 @@ export const UI = {
         input.dataset.row = i;
         input.dataset.col = j;
 
+
         input.addEventListener("input", function (e) {
           this.value = this.value.toUpperCase();
           if (this.value.length === 1 && j < wordLength - 1) {
@@ -88,15 +89,27 @@ export const UI = {
     }
 
     this.enableRow(0);
-    this.focusFirstCellInRow(0);
+    this.focusFirstCellInRow(1);
   },
 
   enableRow(rowIndex) {
     const rows = this.elements.table.rows;
     for (let i = 0; i < rows.length; i++) {
       const inputs = rows[i].querySelectorAll("input");
-      inputs.forEach((input) => {
-        input.disabled = i !== rowIndex;
+      inputs.forEach((input, j) => {
+        if (i === rowIndex) {
+          input.disabled = false;
+          if (j === 0) {
+            const firstLetter = GameState.secretWord.charAt(0).toUpperCase();
+            input.value = firstLetter;
+            input.setAttribute("readonly", true);
+          } else {
+            input.value = "";
+            input.removeAttribute("readonly");
+          }
+        } else {
+          input.disabled = true;
+        }
       });
     }
   },
@@ -107,8 +120,8 @@ export const UI = {
         const table = this.elements.table;
         if (table && table.rows && table.rows.length > rowIndex) {
           const row = table.rows[rowIndex];
-          if (row && row.cells && row.cells.length > 0) {
-            const firstInput = row.cells[0].querySelector("input");
+          if (row && row.cells && row.cells.length > 1) {
+            const firstInput = row.cells[1].querySelector("input");
             if (firstInput) {
               firstInput.focus();
             } else {
