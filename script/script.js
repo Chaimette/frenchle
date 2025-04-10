@@ -249,7 +249,7 @@ async function checkGuess(rowIndex) {
     focusFirstCellInRow(rowIndex + 1);
   }
   
-  saveGameState();
+  // saveGameState();
 }
 
 function updateAttempts() {
@@ -264,19 +264,19 @@ function updateScore() {
   const existingScore = parseInt(localStorage.getItem("totalScore") || "0");
   const newTotalScore = existingScore + totalScore;
 
-  localStorage.setItem("totalScore", newTotalScore.toString());
+  // localStorage.setItem("totalScore", newTotalScore.toString());
 
   score.textContent = `Score: ${newTotalScore}`;
 }
 
-function saveGameState() {
-  const gameState = {
-    secretWord,
-    attempts,
-    gameOver,
-  };
-  localStorage.setItem("gameState", JSON.stringify(gameState));
-}
+// function saveGameState() {
+//   const gameState = {
+//     secretWord,
+//     attempts,
+//     gameOver,
+//   };
+//   localStorage.setItem("gameState", JSON.stringify(gameState));
+// }
 
 // function loadGameState() {
 //   const savedState = localStorage.getItem("gameState");
@@ -322,8 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // }
   
   refreshAtMidnight();
-  createGrid(secretWord.length);
 
-  const savedScore = localStorage.getItem("totalScore") || "0";
-  score.textContent = `Score: ${savedScore}`;
+  // const savedScore = localStorage.getItem("totalScore") || "0";
+  // score.textContent = `Score: ${savedScore}`;
 });
