@@ -118,11 +118,12 @@ export const UI = {
     setTimeout(() => {
       try {
         const table = this.elements.table;
+        // const firstLetter = GameState.secretWord.charAt(0).toUpperCase();
         if (table && table.rows && table.rows.length > rowIndex) {
           const row = table.rows[rowIndex];
           if (row && row.cells && row.cells.length > 1) {
             const firstInput = row.cells[1].querySelector("input");
-            if (firstInput) {
+            if (firstInput /* && key !== firstLetter */) {
               firstInput.focus();
             } else {
               console.warn(

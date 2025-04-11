@@ -11,7 +11,7 @@ export const GameController = {
     GameState.getDailySecretWord()
       .then((word) => {
         GameState.secretWord = word;
-        // console.log("Today's word:", GameState.secretWord);
+        console.log("Today's word:", GameState.secretWord);
         UI.updateWordLength(GameState.secretWord.length);
         UI.createGrid(GameState.secretWord.length);
         UI.updateAttempts();
