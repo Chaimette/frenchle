@@ -7,7 +7,9 @@
 #word-grid {
   border-collapse: collapse;
   margin: 2rem auto;
-  border: 2px solid #333;
+  border: 3px solid #9285a8;
+  box-shadow: 10px 10px 3px rgb(167, 167, 167);
+  background-color: #9285a8;
 }
 
 #word-grid td {
@@ -17,8 +19,7 @@
   vertical-align: middle;
   font-size: 2rem;
   font-weight: bold;
-  border: 1px solid #c5c5c5;
-  border-radius: 8px;
+  border: 1px solid #9285a8;
   background-color: rgba(255, 255, 255, 0.6);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;

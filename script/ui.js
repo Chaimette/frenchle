@@ -49,10 +49,6 @@ export const UI = {
       return;
     }
 
-    console.log(
-      `Creating grid with ${GameConfig.MAX_ATTEMPTS} rows and ${wordLength} columns`
-    );
-
     for (let i = 0; i < GameConfig.MAX_ATTEMPTS; i++) {
       const row = table.insertRow();
       row.dataset.rowIndex = i;
@@ -114,35 +110,39 @@ export const UI = {
     }
   },
 
+//TODO focus on second cell in row since first cell is autofilled
+
+ 
+  
   focusFirstCellInRow(rowIndex) {
     setTimeout(() => {
       try {
         const table = this.elements.table;
-        // const firstLetter = GameState.secretWord.charAt(0).toUpperCase();
         if (table && table.rows && table.rows.length > rowIndex) {
           const row = table.rows[rowIndex];
           if (row && row.cells && row.cells.length > 1) {
-            const firstInput = row.cells[1].querySelector("input");
-            if (firstInput /* && key !== firstLetter */) {
-              firstInput.focus();
-            } else {
-              console.warn(
-                `No input found in the first cell of row ${rowIndex}`
-              );
-            }
+        const secondInput = row.cells[1].querySelector("input");
+        if (secondInput) {
+          secondInput.focus();
+        } else {
+          console.warn(
+            `No input found in the second cell of row ${rowIndex}`
+          );
+        }
           } else {
-            console.warn(`Row ${rowIndex} has no cells`);
+        console.warn(`Row ${rowIndex} has no cells`);
           }
         } else {
           console.warn(
-            `Row ${rowIndex} not found, table has ${
-              table ? (table.rows ? table.rows.length : 0) : 0
-            } rows`
+        `Row ${rowIndex} not found, table has ${
+          table ? (table.rows ? table.rows.length : 0) : 0
+        } rows`
           );
         }
       } catch (e) {
-        console.warn(`Could not focus first cell in row ${rowIndex}:`, e);
+        console.warn(`Could not focus second cell in row ${rowIndex}:`, e);
       }
     }, 100); // Delay to ensure the DOM is updated
   },
+ 
 };
