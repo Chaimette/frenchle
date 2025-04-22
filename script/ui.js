@@ -62,7 +62,7 @@ export const UI = {
         input.dataset.row = i;
         input.dataset.col = j;
 
-
+        //TODO implement enabling of letter update for correct letters displayed
         input.addEventListener("input", function (e) {
           this.value = this.value.toUpperCase();
           if (this.value.length === 1 && j < wordLength - 1) {
@@ -91,58 +91,69 @@ export const UI = {
   enableRow(rowIndex) {
     const rows = this.elements.table.rows;
     for (let i = 0; i < rows.length; i++) {
-      const inputs = rows[i].querySelectorAll("input");
-      inputs.forEach((input, j) => {
-        if (i === rowIndex) {
-          input.disabled = false;
-          if (j === 0) {
-            const firstLetter = GameState.secretWord.charAt(0).toUpperCase();
-            input.value = firstLetter;
-            input.setAttribute("readonly", true);
-          } else {
-            input.value = "";
-            input.removeAttribute("readonly");
-          }
-        } else {
-          input.disabled = true;
-        }
-      });
+        const inputs = rows[i].querySelectorAll("input");
+        inputs.forEach((input, j) => {
+            if (i === rowIndex) {
+                input.disabled = false;
+
+                if (j === 0) {
+                    // Always display the first letter of the secret word // MIGHT CHANGE THAT LATER
+                    const firstLetter = GameState.secretWord.charAt(0).toUpperCase();
+                    input.value = firstLetter;
+                    input.setAttribute("readonly", true);
+                } else {
+                    // Display correctly guessed letters from previous rows
+                    const correctLetter = Array.from(rows)
+                        .slice(0, rowIndex)
+                        .map((row) => row.cells[j].querySelector("input"))
+                        .find((prevInput) => prevInput && prevInput.classList.contains("correct"));
+
+                    if (correctLetter) {
+                        input.value = correctLetter.value; // Set the correct letter
+                    } else {
+                        input.value = ""; // Clear the input if no correct letter
+                    }
+
+                    input.removeAttribute("readonly");
+                }
+            } else {
+                input.disabled = true;
+            }
+        });
     }
-  },
 
-//TODO focus on second cell in row since first cell is autofilled
+    // Focus on the first empty cell
+    this.focusFirstCellInRow(rowIndex);
+},
 
- 
-  
-  focusFirstCellInRow(rowIndex) {
+focusFirstCellInRow(rowIndex) {
     setTimeout(() => {
-      try {
-        const table = this.elements.table;
-        if (table && table.rows && table.rows.length > rowIndex) {
-          const row = table.rows[rowIndex];
-          if (row && row.cells && row.cells.length > 1) {
-        const secondInput = row.cells[1].querySelector("input");
-        if (secondInput) {
-          secondInput.focus();
-        } else {
-          console.warn(
-            `No input found in the second cell of row ${rowIndex}`
-          );
+        try {
+            const table = this.elements.table;
+            if (table && table.rows && table.rows.length > rowIndex) {
+                const row = table.rows[rowIndex];
+                if (row && row.cells ) {
+                  const firstEmptyInput = Array.from(row.cells)
+                  .map((cell) => cell.querySelector("input"))
+                  .find((input) => input && input.value === "");                    
+                  if (firstEmptyInput) {
+                        firstEmptyInput.focus();
+                    } else {
+                        console.warn(`No input found in the second cell of row ${rowIndex}`);
+                    }
+                } else {
+                    console.warn(`Row ${rowIndex} has no cells`);
+                }
+            } else {
+                console.warn(
+                    `Row ${rowIndex} not found, table has ${
+                        table ? (table.rows ? table.rows.length : 0) : 0
+                    } rows`
+                );
+            }
+        } catch (e) {
+            console.warn(`Could not focus second cell in row ${rowIndex}:`, e);
         }
-          } else {
-        console.warn(`Row ${rowIndex} has no cells`);
-          }
-        } else {
-          console.warn(
-        `Row ${rowIndex} not found, table has ${
-          table ? (table.rows ? table.rows.length : 0) : 0
-        } rows`
-          );
-        }
-      } catch (e) {
-        console.warn(`Could not focus second cell in row ${rowIndex}:`, e);
-      }
     }, 100); // Delay to ensure the DOM is updated
-  },
- 
+}
 };

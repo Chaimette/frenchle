@@ -1,0 +1,26 @@
+{
+  "devDependencies": {
+    "tailwindcss": "^4.1.4"
+  },
+  "name": "wordle",
+  "version": "1.0.0",
+  "description": "This is a WORDLE type of game, where you have to find a daily French word.\r // TO DO\r  ✅ - Toujours afficher la 1ere lettre du mot;\r - Afficher les lettres correctes sur les essais qui suivent;\r - Add animations;\r - Ajouter un clavier en option où les lettres déjà utilisées sont grisées",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chaimette/wordle.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chaimette/wordle/issues"
+  },
+  "homepage": "https://github.com/Chaimette/wordle#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.4"
+  }
+}
