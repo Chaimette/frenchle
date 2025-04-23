@@ -69,7 +69,7 @@ header {
   align-items: center;
   justify-content: center;
 }
-#submit-button{
+button{
   justify-content: center;
   margin-top: 2rem;
   padding: 1rem 2rem;

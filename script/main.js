@@ -21,4 +21,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       GameController.checkGuess(activeRow);
     }
   });
+
+  //TODO ADD RESTART BUTTON EVENT LISTENER TO RESTART GAME
 });
