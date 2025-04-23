@@ -62,24 +62,6 @@ export const UI = {
         input.dataset.row = i;
         input.dataset.col = j;
 
-        //TODO implement enabling of letter update for correct letters displayed
-        input.addEventListener("input", function (e) {
-          this.value = this.value.toUpperCase();
-          if (this.value.length === 1 && j < wordLength - 1) {
-            const nextInput = row.cells[j + 1].querySelector("input");
-            nextInput.focus();
-          }
-        });
-
-        input.addEventListener("keydown", function (e) {
-          if (e.key === "Enter" && !GameState.gameOver) {
-            GameController.checkGuess(parseInt(this.dataset.row));
-          } else if (e.key === "Backspace" && this.value === "" && j > 0) {
-            const prevInput = row.cells[j - 1].querySelector("input");
-            prevInput.focus();
-          }
-        });
-
         cell.appendChild(input);
       }
     }
@@ -91,69 +73,130 @@ export const UI = {
   enableRow(rowIndex) {
     const rows = this.elements.table.rows;
     for (let i = 0; i < rows.length; i++) {
-        const inputs = rows[i].querySelectorAll("input");
-        inputs.forEach((input, j) => {
-            if (i === rowIndex) {
-                input.disabled = false;
+      const inputs = rows[i].querySelectorAll("input");
+      inputs.forEach((input, j) => {
+        if (i === rowIndex) {
+          input.disabled = false;
 
-                if (j === 0) {
-                    // Always display the first letter of the secret word // MIGHT CHANGE THAT LATER
-                    const firstLetter = GameState.secretWord.charAt(0).toUpperCase();
-                    input.value = firstLetter;
-                    input.setAttribute("readonly", true);
-                } else {
-                    // Display correctly guessed letters from previous rows
-                    const correctLetter = Array.from(rows)
-                        .slice(0, rowIndex)
-                        .map((row) => row.cells[j].querySelector("input"))
-                        .find((prevInput) => prevInput && prevInput.classList.contains("correct"));
+          if (j === 0) {
+            // Always display the first letter of the secret word // MIGHT CHANGE THAT LATER
+            const firstLetter = GameState.secretWord.charAt(0).toUpperCase();
+            input.value = firstLetter;
+            input.setAttribute("readonly", true);
+          } else {
+            // Display correctly guessed letters from previous rows
+            const correctLetter = Array.from(rows)
+              .slice(0, rowIndex)
+              .map((row) => row.cells[j].querySelector("input"))
+              .find(
+                (prevInput) =>
+                  prevInput && prevInput.classList.contains("correct")
+              );
 
-                    if (correctLetter) {
-                        input.value = correctLetter.value; // Set the correct letter
-                    } else {
-                        input.value = ""; // Clear the input if no correct letter
-                    }
-
-                    input.removeAttribute("readonly");
-                }
+            if (correctLetter) {
+              input.value = correctLetter.value; // Set the correct letter
+              input.dataset.prefilled = "true";
             } else {
-                input.disabled = true;
+              input.value = ""; // Clear the input if no correct letter
+              input.dataset.prefilled = "false";
             }
-        });
+
+            input.removeAttribute("readonly");
+            this.setupInputListener(input, j, rowIndex);
+          }
+        } else {
+          input.disabled = true;
+        }
+      });
     }
 
     // Focus on the first empty cell
     this.focusFirstCellInRow(rowIndex);
-},
+  },
 
-focusFirstCellInRow(rowIndex) {
+  // New method to set up proper input handling
+  setupInputListener(input, colIndex, rowIndex) {
+    // Remove existing listeners first to avoid duplicates
+    const newInput = input.cloneNode(true);
+    //remplace l'og avec le clone
+    input.parentNode.replaceChild(newInput, input);
+    //on redirige vers l'input cloné
+    input = newInput;
+
+    const wordLength = GameState.secretWord.length;
+    const row = this.elements.table.rows[rowIndex];
+
+    input.addEventListener("focus", function () {
+      // Sélectionne la lettre correcte pré-remplie (surlignée en bleu)
+      if (this.dataset.prefilled === "true") {
+        this.select();
+      }
+    });
+
+    input.addEventListener("input", function (e) {
+      this.value = this.value.toUpperCase();
+
+      // If this was a pre-filled field, we've now changed it
+      if (this.dataset.prefilled === "true") {
+        this.dataset.prefilled = "changed";
+      }
+
+      if (this.value.length === 1 && colIndex < wordLength - 1) {
+        const nextInput = row.cells[colIndex + 1].querySelector("input");
+        nextInput.focus();
+      }
+    });
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !GameState.gameOver) {
+        GameController.checkGuess(rowIndex);
+      } else if (e.key === "Backspace" && this.value === "" && colIndex > 0) {
+        const prevInput = row.cells[colIndex - 1].querySelector("input");
+        prevInput.focus();
+      } else if (
+        this.dataset.prefilled === "true" &&
+        e.key.length === 1 &&
+        e.key.match(/[a-zA-Z]/)
+      ) {
+        // If this is a pre-filled field and user types a letter,
+        // clear the field first so the new letter replaces the old one
+        this.value = "";
+        this.dataset.prefilled = "changed";
+      }
+    });
+
+    return input;
+  },
+  focusFirstCellInRow(rowIndex) {
     setTimeout(() => {
-        try {
-            const table = this.elements.table;
-            if (table && table.rows && table.rows.length > rowIndex) {
-                const row = table.rows[rowIndex];
-                if (row && row.cells ) {
-                  const firstEmptyInput = Array.from(row.cells)
-                  .map((cell) => cell.querySelector("input"))
-                  .find((input) => input && input.value === "");                    
-                  if (firstEmptyInput) {
-                        firstEmptyInput.focus();
-                    } else {
-                        console.warn(`No input found in the second cell of row ${rowIndex}`);
-                    }
-                } else {
-                    console.warn(`Row ${rowIndex} has no cells`);
-                }
+      try {
+        const table = this.elements.table;
+        if (table && table.rows && table.rows.length > rowIndex) {
+          const row = table.rows[rowIndex];
+          if (row && row.cells) {
+            const firstEditableInput = Array.from(row.cells)
+              .map((cell) => cell.querySelector("input"))
+              .find((input) => input && input.value === "");
+            if (firstEditableInput) {
+              firstEditableInput.focus();
             } else {
-                console.warn(
-                    `Row ${rowIndex} not found, table has ${
-                        table ? (table.rows ? table.rows.length : 0) : 0
-                    } rows`
-                );
+              console.warn(
+                `No input found in the second cell of row ${rowIndex}`
+              );
             }
-        } catch (e) {
-            console.warn(`Could not focus second cell in row ${rowIndex}:`, e);
+          } else {
+            console.warn(`Row ${rowIndex} has no cells`);
+          }
+        } else {
+          console.warn(
+            `Row ${rowIndex} not found, table has ${
+              table ? (table.rows ? table.rows.length : 0) : 0
+            } rows`
+          );
         }
+      } catch (e) {
+        console.warn(`Could not focus second cell in row ${rowIndex}:`, e);
+      }
     }, 100); // Delay to ensure the DOM is updated
-}
+  },
 };
