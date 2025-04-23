@@ -1,5 +1,5 @@
-@import "tailwindcss";
-/* 
+
+
 * {
   margin: 0;
   padding: 0;
@@ -80,4 +80,4 @@ header {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-} */
+} 
